@@ -17,7 +17,7 @@ http://norada.com/answers/api/external_api_introduction
 
 ## Usage
 
-    >>> from solve import Solve360
+    >>> from solve360 import Solve360
     >>> crm = Solve360(your_email, your_token)
     >>> crm.list_contacts(limit=10, start=0)
     {'status': 'success',
@@ -45,7 +45,7 @@ Edit `tests.py` and update variable `CRED_EMAIL` and `CRED_TOKEN` with your solv
 Optionally set `CHANGE_CRM_STATE = True` to test operations that must be reversed manually. I.e. categories may be created through the API but no category destroy operation is available in the API.
 
     $ pip install pytest
-    $ py.test solve/testspy
+    $ py.test solve360/tests.py
 
 
 ## Dependencies
