@@ -32,7 +32,7 @@ if sys.argv[-1] == "publish":
 long_description = ''
 
 try:
-    if os.path.exists(os.path.join(os.path.basename(__file__), 'README.md')):
+    if os.path.exists('README.md'):
         os.system('pandoc --from=markdown --to=rst --output=README.rst README.md')
     long_description = open('README.rst').read()
 except:
