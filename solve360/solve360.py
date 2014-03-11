@@ -320,10 +320,27 @@ class Solve360():
         kwargs['filter_'] = filter_
         return self._show_report('opportunities', **kwargs)
 
-    def show_report_activities(self, start, end, last, **kwargs):
+    def show_report_activities(self, start, end, last='created', **kwargs):
+        """ start (date in YYYY-MM-DD format)
+            end (date in YYYY-MM-DD format)
+            last (string [created, updated, changed, completed])
+
+            kwargs:
+                users (integer [group id, user id])
+                categories (integer)
+                itemtypes (integer [1, 2, 40])
+                itemsdata (integer [0=do not include parent data, 1=include parent data])
+
+                All activity types are queried by default, types are mapped as:
+                    note=3, event=4, followup=6, task=14, file=23, photo=24, opportunity=32,
+                    event (non-linked)=61, call log=73, scheduled email=88
+
+                The Solve360 web interface does query all activities via XHR by default too.
+        """
         kwargs['start'] = start
         kwargs['end'] = end
         kwargs['last'] = last
+        kwargs['types'] = '73,4,6,3,14,32,88,23,24,61'
         return self._show_report('activities', **kwargs)
 
     def show_report_timetracking(self, start, end, last, **kwargs):
