@@ -28,6 +28,16 @@ http://norada.com/answers/api/external_api_introduction
     {'status': 'success',
      'item': {'id': 12347, ...},
      ...}
+	>>> crm.show_report_activities('2014-03-05', '2014-03-11')
+	u'66326826': {u'comments': [],
+				   u'created': u'2014-03-05T08:48:07+00:00',
+				   u'fields': {u'assignedto': u'88842777',
+    			   u'assignedto_cn': u'John Doe',
+    u'completed': u'0',
+    u'duedate': u'2014-03-07T00:00:00+00:00',
+    u'priority': u'0',
+    u'remindtime': u'0',
+	...}
 
 
 ## Error handling
