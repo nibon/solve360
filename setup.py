@@ -32,10 +32,9 @@ if sys.argv[-1] == "publish":
 long_description = ''
 
 try:
-    if os.path.exists('README.md'):
-        os.system('pandoc --from=markdown --to=rst --output=README.rst README.md')
+    os.system('pandoc --from=markdown --to=rst --output=README.rst README.md')
     long_description = open('README.rst').read()
-except:
+except IOError:
     long_description = open('README.md').read()
 
 setup(
@@ -57,11 +56,8 @@ setup(
         'Intended Audience :: Developers',
         'Natural Language :: English',
         'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
-
     ),
 )

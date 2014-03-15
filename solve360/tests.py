@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 from requests import HTTPError
 from solve360 import Solve360
 import pytest
@@ -17,7 +15,6 @@ CHANGE_CRM_STATE = False
 # Update CRED_EMAIL and CRED_TOKEN to perform live tests against solve360.
 CRED_EMAIL = None
 CRED_TOKEN = None
-
 
 crm = None
 test_contact = None
