@@ -578,7 +578,8 @@ class Solve360(object):  # pylint: disable=R0904
         kwargs['start'] = start
         kwargs['end'] = end
         kwargs['last'] = last
-        kwargs['types'] = '73,4,6,3,14,32,88,23,24,61'
+        if 'types' not in kwargs:
+            kwargs['types'] = '73,4,6,3,14,32,88,23,24,61'
         return self._show_report('activities', **kwargs)
 
     def show_report_timetracking(self, start, end, last, **kwargs):
