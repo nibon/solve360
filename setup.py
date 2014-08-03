@@ -46,7 +46,7 @@ setup(
     author_email='daniel@nibon.se',
     url='https://github.com/nibon/solve360',
     install_requires=['requests>=1.0.0'],
-    tests_require=['pytest>=2.0.0'],
+    tests_require=['pytest>=2.0.0', 'httpretty>=0.6.1'],
     packages=['solve360'],
     package_data={'': ['*.rst', '*.md']},
     license='Apache 2.0',
