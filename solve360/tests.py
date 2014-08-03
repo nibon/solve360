@@ -113,6 +113,50 @@ def test_list_contacts():
 
 
 @httpretty.activate
+def test_list_contacts_paginate_stop_on_pages():
+    httpretty.register_uri(httpretty.GET, crm.url.format(url='contacts/'),
+                           responses=[
+                               httpretty.Response(body='{"status": "success", "count": 3,'
+                                                       ' "obj1": []}',
+                                                  content_type='application/json'),
+                               httpretty.Response(body='{"status": "success", "count": 3,'
+                                                       ' "obj2": []}',
+                                                  content_type='application/json'),
+                               httpretty.Response(body='{"status": "success", "count": 3,'
+                                                       ' "obj3": []}',
+                                                  content_type='application/json')
+                           ])
+    contacts = crm.list_contacts(limit=1, pages=2)
+    assert contacts['status'] == 'success'
+    assert contacts['count'] == 3
+    assert contacts['obj1'] == []
+    assert contacts['obj2'] == []
+    assert 'obj3' not in contacts
+    assert len(contacts) == 2 + 2  # 'status' + 'count' + <results>
+
+
+@httpretty.activate
+def test_list_contacts_paginate_stop_on_objects():
+    httpretty.register_uri(httpretty.GET, crm.url.format(url='contacts/'),
+                           responses=[
+                               httpretty.Response(body='{"status": "success", "count": 2,'
+                                                       ' "obj1": [],  "obj2": []}',
+                                                  content_type='application/json'),
+                               httpretty.Response(body='{"status": "success", "count": 2,'
+                                                       ' "obj3": [], "obj4": []}',
+                                                  content_type='application/json')
+                           ])
+    contacts = crm.list_contacts(limit=2, pages=3)
+    assert contacts['status'] == 'success'
+    assert contacts['count'] == 2
+    assert contacts['obj1'] == []
+    assert contacts['obj2'] == []
+    assert 'obj3' not in contacts
+    assert 'obj4' not in contacts
+    assert len(contacts) == 2 + 2  # 'status' + 'count' + <results>
+
+
+@httpretty.activate
 def test_contact_activity_create():
     httpretty.register_uri(httpretty.POST, crm.url.format(url='contacts/note/'),
                            body='{"status": "success"}',
