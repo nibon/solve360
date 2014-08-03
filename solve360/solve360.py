@@ -7,6 +7,7 @@ __author__ = 'Daniel Nibon <daniel@nibon.se>'
 
 import sys
 import json
+
 if sys.version_info[0] == 3:
     import urllib.parse as urllib_
 else:
@@ -62,7 +63,6 @@ class Solve360(object):  # pylint: disable=R0904
         method = method.lower()
         if method not in ['get', 'post', 'put', 'delete']:
             raise ValueError('Invalid method {method}'.format(method=method))
-        #kwargs = {'auth': auth, 'headers': headers, 'data': data}
         response = getattr(requests, method)(url,
                                              auth=auth,
                                              headers=headers,
@@ -599,5 +599,5 @@ class Solve360(object):  # pylint: disable=R0904
         kwargs['start'] = start
         kwargs['end'] = end
         kwargs['last'] = last
-        return self._show_report('activities', **kwargs)
+        return self._show_report('timetracking', **kwargs)
 
