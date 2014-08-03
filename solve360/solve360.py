@@ -24,6 +24,10 @@ ENTITY_PROJECTBLOG = 'projectblogs'
 
 VALID_ENTITIES = [ENTITY_COMPANY, ENTITY_CONTACT, ENTITY_PROJECTBLOG]
 
+VALID_LIST_PARAM = ['layout', 'fieldlist', 'categories', 'filtermode',
+                    'filtervalue', 'special', 'searchmode', 'searchvalue',
+                    'limit', 'start', 'sortfield', 'sortdir']
+
 ERR_MSG_VALID_ENTITIES = 'Invalid entity. Valid once are: {entities}' \
     .format(entities=VALID_ENTITIES)
 ERR_MSG_INVALID_CRED = 'User and token required'
@@ -107,17 +111,36 @@ class Solve360(object):  # pylint: disable=R0904
                              self.auth,
                              self.headers)
 
-    @valid_entity
-    def _list(self, entity=None, **kwargs):
-        """List entities."""
-        payload = dict((k, v) for k, v in kwargs.items() if v or v == 0)
+    def _list_build_query(self, entity, **kwargs):
+        """Builds the url and query for a list type entity request.
+        The query might be updated when fetching incomplete set"""
+        payload = dict((k, v) for k, v in kwargs.items()
+                       if (v or v == 0) and k in VALID_LIST_PARAM)
         query = urllib_.urlencode(payload)
         url = self.url.format(url='{type}/?{query}'.format(type=entity,
                                                            query=query))
-        return self._request('get',
-                             url,
-                             self.auth,
-                             self.headers)
+        return url
+
+    @valid_entity
+    def _list(self, entity=None, **kwargs):
+        """List entities."""
+        response = {}
+        pages = kwargs.get('pages', 1)
+        if not type(pages) == int or not pages > 0:
+            raise ValueError('Parameter <pages> must be a positive number.')
+        while pages > 0:
+            _response = self._request('get',
+                                      self._list_build_query(entity, **kwargs),
+                                      self.auth,
+                                      self.headers)
+            response.update(_response)
+            kwargs['start'] = kwargs.get('start', 0) + kwargs.get('limit', 0)
+            pages -= 1
+            # Checking response entities excluding keys 'count' and 'status'
+            if 'count' in response and response['count'] == len(response) - 2:
+                break  # We got all objects
+
+        return response
 
     @valid_entity
     def _create_categories(self, name, entity=None):
