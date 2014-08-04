@@ -17,7 +17,7 @@ http://norada.com/answers/api/external_api_introduction
 
 ## Usage
 
-### Initiate solve object
+### Initiate solve360 object
 
     >>> from solve360 import Solve360
     >>> crm = Solve360(your_email, your_token)
@@ -33,7 +33,7 @@ http://norada.com/answers/api/external_api_introduction
 ### Get contacts - paginated
 
 The solve360 API have a fixed upper limit on objects each list request will return, currently set to 5000.
-To fetch more objects in a single request this wrapper offers an parameter `pages`. The request
+To fetch more objects in a single request this wrapper offers a parameter `pages`. The request
 will continue to fetch objects until either all objects are returned or the number of given
 pages have been reached. 
 
@@ -42,7 +42,8 @@ pages have been reached.
     {u'status': 'success',
      u'count': 12000,
      u'12345': {...},
-     u'12346': {...}}
+     u'12346': {...}, 
+     ...}
     >>> len(contacts)
     10002  # Keys 'status' and 'count' plus 10000 contacts 
 
@@ -77,7 +78,8 @@ a number high enough.
             u'duedate': u'2014-03-07T00:00:00+00:00',
             u'priority': u'0',
             u'remindtime': u'0',
-        ...}
+        ...}, 
+     ...
     }
 
 
