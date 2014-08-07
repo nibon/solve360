@@ -2,7 +2,7 @@
 
 # Solve360 API Python wrapper
 
-Python wrapper for [Norada CRM Solve360](http://norada.com/) API. All current API operations are supported (2014-08-03).
+Python wrapper for [Norada CRM Solve360](http://norada.com/) API. 
 
 
 ## Solve360 API Documentation
@@ -85,7 +85,7 @@ a number high enough.
 
 ## Error handling
 
-Successful requests with `response.status_code == 2XX` will parse the json response body and only return the response data.
+Successful requests with `response.status_code == 2XX` will parse the json response body and only return the response data in python data format.
 
 Invalid requests with `response.status_code == 4XX or 5XX` will raise an `requests.HTTPException` using requests `raise_for_status()` returning the complete stacktrace including server error message if available.
 
@@ -100,7 +100,7 @@ Invalid requests with `response.status_code == 4XX or 5XX` will raise an `reques
 
 * [requests](https://pypi.python.org/pypi/requests)
 
-### Dependencies Testing
+### Testing
 
 * [pytest](https://pypi.python.org/pypi/pytest)
 * [httpretty](https://pypi.python.org/pypi/httpretty)
