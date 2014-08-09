@@ -17,18 +17,26 @@ http://norada.com/answers/api/external_api_introduction
 
 ## Usage
 
+The API methods and parameters are the same for all record types, i.e. Contacts, Companies and Project Blogs. Simply use the appropriate segment name for the record type. For example, if creating a:
+
+ * Contact - Use crm.create_contact()
+ * Company - Use crm.create_company()
+ * Projectblog - Use crm.create_projectblog()
+
 ### Initiate solve360 object
 
     >>> from solve360 import Solve360
     >>> crm = Solve360(your_email, your_token)
 
-### Get contacts
+### List contacts
 
     >>> crm.list_contacts()
     {u'status': 'success',
      u'count': 2,
      u'12345': {...},
      u'12346': {...}}
+
+[Reference](https://solve360.com/api/contacts/#list)
      
 ### Get contacts - paginated
 
@@ -48,8 +56,8 @@ pages have been reached.
     10002  # Keys 'status' and 'count' plus 10000 contacts 
 
 Parameter `pages` must be a positive number. There is currently no 
-parameter that means fetches all objects disregarding how many there is. Just set `pages` to
-a number high enough. 
+parameter that fetches all objects available disregard how many there is totally.
+Just set `pages` to a number high enough to include the number of objects required. 
 
 ### Show contact
 
@@ -59,12 +67,32 @@ a number high enough.
      u'fields': {...},
      ...}
 
+[Reference](https://solve360.com/api/contacts/#show)
+
 ### Create contact
 
     >>> crm.create_contact({'firstname': 'test', 'lastname': 'creation'})
     {'status': 'success',
      'item': {'id': 12347, ...},
      ...}
+
+[Reference](https://solve360.com/api/contacts/#create)
+
+### Update contact
+
+    >>> crm.update_contact(12345, {'firstname': 'updated', 'lastname': 'name'})
+    {'status': 'success',
+     'item': {'id': 12345, ...},
+     ...}
+
+[Reference](https://solve360.com/api/contacts/#update)
+
+### Destroy contact
+
+    >>> crm.destroy_contact(12345)
+    {'status': 'success'}
+
+[Reference](https://solve360.com/api/contacts/#destroy)
 
 ### Show report activities 
 
@@ -81,7 +109,8 @@ a number high enough.
         ...}, 
      ...
     }
-
+    
+[Reference](https://solve360.com/api/activity-reports/#show)
 
 ## Error handling
 
