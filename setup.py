@@ -49,15 +49,13 @@ setup(
     tests_require=['pytest>=2.0.0', 'httpretty>=0.6.1'],
     packages=['solve360'],
     package_data={'': ['*.rst', '*.md']},
-    license='Apache 2.0',
-    keywords='norada solve solve360 api wrapper',
+    license='The MIT Licence',
+    keywords='norada solve360 api wrapper',
     classifiers=(
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Natural Language :: English',
-        'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
     ),
 )
