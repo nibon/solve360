@@ -19,23 +19,12 @@ for line in open('./solve360/__init__.py'):
         break
 assert version
 
-
-def publish():
-    """Publish to PyPi"""
-    os.system("python setup.py sdist upload")
-
-
-if sys.argv[-1] == "publish":
-    publish()
-    sys.exit()
-
-long_description = ''
-
 try:
     os.system('pandoc --from=markdown --to=rst --output=README.rst README.md')
-    long_description = open('README.rst').read()
 except IOError:
-    long_description = open('README.md').read()
+    pass
+
+long_description = open(('README.rst' if os.path.exists('README.rst') else 'README.md')).read() 
 
 setup(
     name='solve360',
@@ -45,7 +34,7 @@ setup(
     author='Daniel Nibon',
     author_email='daniel@nibon.se',
     url='https://github.com/nibon/solve360',
-    install_requires=['requests>=1.0.0'],
+    install_requires=['requests>=1.0.0', 'iso8601>=0.1.10'],
     tests_require=['pytest>=2.0.0', 'httpretty>=0.6.1'],
     packages=['solve360'],
     package_data={'': ['*.rst', '*.md']},

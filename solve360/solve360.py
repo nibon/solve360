@@ -14,6 +14,7 @@ else:
     import urllib as urllib_
 
 import requests
+from iso8601 import iso8601, ParseError
 
 
 LIST_MAX_LIMIT = 5000  # Defined max limit for _list operation
@@ -27,6 +28,8 @@ VALID_ENTITIES = [ENTITY_COMPANY, ENTITY_CONTACT, ENTITY_PROJECTBLOG]
 VALID_LIST_PARAM = ['layout', 'fieldlist', 'categories', 'filtermode',
                     'filtervalue', 'special', 'searchmode', 'searchvalue',
                     'limit', 'start', 'sortfield', 'sortdir']
+
+DEFAULT_DATE_FIELDS = ['created', 'updated', 'viewed']
 
 ERR_MSG_VALID_ENTITIES = 'Invalid entity. Valid once are: {entities}' \
     .format(entities=VALID_ENTITIES)
@@ -121,6 +124,26 @@ class Solve360(object):  # pylint: disable=R0904
                                                            query=query))
         return url
 
+    def _parse_dates(self, entries, date_fields=None):
+        """Create datetime parsed versions of dates found in entries."""
+        if date_fields:
+            for entry in entries:
+                if entry not in ['count', 'status']:
+                    self._parse_date(entries[entry], date_fields)
+        return entries
+
+    def _parse_date(self, entry, date_fields):
+        """Parse the value for keys defined in `datefields` in entry.
+        If successfully parsed as datetime a new key `key_parsed` is
+        created with a datetime value parsed from previous string value."""
+        for field in date_fields:
+            if field in entry:
+                try:
+                    entry[field + '_parsed'] = iso8601.parse_date(entry[field])
+                except ParseError:
+                    pass
+        return entry
+
     @valid_entity
     def _list(self, entity=None, **kwargs):
         """List entities."""
@@ -139,6 +162,9 @@ class Solve360(object):  # pylint: disable=R0904
             # Checking response entities excluding keys 'count' and 'status'
             if 'count' in response and response['count'] == len(response) - 2:
                 break  # We got all objects
+
+        date_fields = kwargs.get('date_fields', ['updated'])
+        response = self._parse_dates(response, date_fields)
 
         return response
 

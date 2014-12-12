@@ -1,6 +1,9 @@
+import json
+
 from _pytest.python import raises
 from requests import HTTPError
 import httpretty
+from iso8601 import iso8601
 
 from solve360 import Solve360
 
@@ -448,6 +451,53 @@ def test_list_projectblogs_categories():
                            content_type='application/json')
     categories = crm.list_projectblogs_categories()
     assert categories['status'] == 'success'
+
+
+# --------------------------------------
+# DATES
+# --------------------------------------
+
+@httpretty.activate
+def test_parse_dates():
+    ISO8601 = "2014-12-12T15:19:21+01:00"
+    PARSED = iso8601.parse_date(ISO8601)
+    response_body = {'status': 'success', 'count': 1,
+                     'obj1': {'updated': ISO8601}}
+    httpretty.register_uri(httpretty.GET, crm.url.format(url='companies/'),
+                           body=json.dumps(response_body),
+                           content_type='application/json')
+    response = crm.list_companies()
+    assert response['status'] == 'success'
+    assert response['obj1']['updated'] == ISO8601
+    assert response['obj1']['updated_parsed'] == PARSED
+
+
+@httpretty.activate
+def test_parse_faulty_dates():
+    response_body = {'status': 'success', 'count': 1,
+                     'obj1': {'id': 42}}
+    httpretty.register_uri(httpretty.GET, crm.url.format(url='companies/'),
+                           body=json.dumps(response_body),
+                           content_type='application/json')
+    response = crm.list_companies(date_fields=['id'])
+    assert response['status'] == 'success'
+    assert response['obj1']['id'] == 42
+    assert 'id_parsed' not in response['obj1']
+
+
+@httpretty.activate
+def test_parse_nondefaultfields_dates():
+    ISO8601 = "2014-12-12T15:19:21+01:00"
+    response_body = {'status': 'success', 'count': 1,
+                     'obj1': {'id': 42, 'updated': ISO8601}}
+    httpretty.register_uri(httpretty.GET, crm.url.format(url='companies/'),
+                           body=json.dumps(response_body),
+                           content_type='application/json')
+    response = crm.list_companies(date_fields=['id'])
+    assert response['status'] == 'success'
+    assert response['obj1']['id'] == 42
+    assert response['obj1']['updated'] == ISO8601
+    assert 'updated_parsed' not in response['obj1']
 
 
 # --------------------------------------
