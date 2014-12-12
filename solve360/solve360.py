@@ -97,13 +97,16 @@ class Solve360(object):  # pylint: disable=R0904
                              data=payload)
 
     @valid_entity
-    def _show(self, uid, entity=None):
+    def _show(self, uid, entity=None, **kwargs):
         """Show detailed information about entity with given ID."""
         url = self.url.format(url='{type}/{uid}/'.format(type=entity, uid=uid))
-        return self._request('get',
-                             url,
-                             self.auth,
-                             self.headers)
+        response = self._request('get',
+                                 url,
+                                 self.auth,
+                                 self.headers)
+        date_fields = kwargs.get('date_fields', DEFAULT_DATE_FIELDS)
+        response = self._parse_dates(response, date_fields)
+        return response
 
     @valid_entity
     def _destroy(self, uid, entity=None):
@@ -132,16 +135,40 @@ class Solve360(object):  # pylint: disable=R0904
                     self._parse_date(entries[entry], date_fields)
         return entries
 
+    def _parse_date_wrapper(self, entry, field):
+        """Returns a dict with a new field name for the parsed date. """
+        try:
+            return {'{}_parsed'.format(field): iso8601.parse_date(entry[field])}
+        except ParseError:
+            pass
+        return {}
+
     def _parse_date(self, entry, date_fields):
         """Parse the value for keys defined in `datefields` in entry.
         If successfully parsed as datetime a new key `key_parsed` is
-        created with a datetime value parsed from previous string value."""
+        created with a datetime value parsed from previous string value.
+        Traverses the dictionaries for list and show operations:
+         - Entry (list operation)
+         - Entry -> item (show operation)
+         - Entry -> item -> fields
+         - Entry -> item -> activities -> <activity>
+        """
         for field in date_fields:
             if field in entry:
-                try:
-                    entry[field + '_parsed'] = iso8601.parse_date(entry[field])
-                except ParseError:
-                    pass
+                entry.update(self._parse_date_wrapper(entry, field))
+            if 'item' in entry:  # Show operation response
+                if field in entry['item']:
+                    entry['item'].update(self._parse_date_wrapper(entry['item'], field))
+                if 'fields' in entry['item'] and field in entry['item']['fields']:
+                    entry['item']['fields'].update(
+                        self._parse_date_wrapper(entry['item']['fields'],
+                                                 field))
+                if 'activities' in entry['item']:
+                    for activity in entry['item']['activities']:
+                        if field in entry['item']['activities'][activity]:
+                            entry['item']['activities'][activity].update(
+                                self._parse_date_wrapper(entry['item']['activities'][activity],
+                                                         field))
         return entry
 
     @valid_entity
@@ -163,7 +190,7 @@ class Solve360(object):  # pylint: disable=R0904
             if 'count' in response and response['count'] == len(response) - 2:
                 break  # We got all objects
 
-        date_fields = kwargs.get('date_fields', ['updated'])
+        date_fields = kwargs.get('date_fields', DEFAULT_DATE_FIELDS)
         response = self._parse_dates(response, date_fields)
 
         return response

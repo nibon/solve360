@@ -120,20 +120,20 @@ def test_list_contacts_paginate_stop_on_pages():
     httpretty.register_uri(httpretty.GET, crm.url.format(url='contacts/'),
                            responses=[
                                httpretty.Response(body='{"status": "success", "count": 3,'
-                                                       ' "obj1": []}',
+                                                       ' "obj1": {}}',
                                                   content_type='application/json'),
                                httpretty.Response(body='{"status": "success", "count": 3,'
-                                                       ' "obj2": []}',
+                                                       ' "obj2": {}}',
                                                   content_type='application/json'),
                                httpretty.Response(body='{"status": "success", "count": 3,'
-                                                       ' "obj3": []}',
+                                                       ' "obj3": {}}',
                                                   content_type='application/json')
                            ])
     contacts = crm.list_contacts(limit=1, pages=2)
     assert contacts['status'] == 'success'
     assert contacts['count'] == 3
-    assert contacts['obj1'] == []
-    assert contacts['obj2'] == []
+    assert contacts['obj1'] == {}
+    assert contacts['obj2'] == {}
     assert 'obj3' not in contacts
     assert len(contacts) == 2 + 2  # 'status' + 'count' + <results>
 
@@ -143,17 +143,17 @@ def test_list_contacts_paginate_stop_on_objects():
     httpretty.register_uri(httpretty.GET, crm.url.format(url='contacts/'),
                            responses=[
                                httpretty.Response(body='{"status": "success", "count": 2,'
-                                                       ' "obj1": [],  "obj2": []}',
+                                                       ' "obj1": {},  "obj2": {}}',
                                                   content_type='application/json'),
                                httpretty.Response(body='{"status": "success", "count": 2,'
-                                                       ' "obj3": [], "obj4": []}',
+                                                       ' "obj3": {}, "obj4": {}}',
                                                   content_type='application/json')
                            ])
     contacts = crm.list_contacts(limit=2, pages=3)
     assert contacts['status'] == 'success'
     assert contacts['count'] == 2
-    assert contacts['obj1'] == []
-    assert contacts['obj2'] == []
+    assert contacts['obj1'] == {}
+    assert contacts['obj2'] == {}
     assert 'obj3' not in contacts
     assert 'obj4' not in contacts
     assert len(contacts) == 2 + 2  # 'status' + 'count' + <results>
@@ -498,6 +498,37 @@ def test_parse_nondefaultfields_dates():
     assert response['obj1']['id'] == 42
     assert response['obj1']['updated'] == ISO8601
     assert 'updated_parsed' not in response['obj1']
+
+
+@httpretty.activate
+def test_parse_show_entity_dates():
+    ISO8601_1 = "2014-12-12T15:19:21+01:00"
+    ISO8601_2 = "2014-12-13T15:19:21+01:00"
+    ISO8601_3 = "2014-12-13T15:19:21+01:00"
+    PARSED_1 = iso8601.parse_date(ISO8601_1)
+    PARSED_2 = iso8601.parse_date(ISO8601_2)
+    PARSED_3 = iso8601.parse_date(ISO8601_2)
+
+    response_body = {'status': 'success', 'count': 1,
+                     'obj1': {'id': 42,
+                              'created': ISO8601_1,
+                              'item': {'updated': ISO8601_2,
+                                       'fields': {'viewed': ISO8601_3},
+                                       'activities': {'act1': {'viewed': ISO8601_3}}}}}
+    httpretty.register_uri(httpretty.GET, crm.url.format(url='companies/42/'),
+                           body=json.dumps(response_body),
+                           content_type='application/json')
+    response = crm.show_company(42)
+    assert response['status'] == 'success'
+    assert response['obj1']['id'] == 42
+    assert response['obj1']['created'] == ISO8601_1
+    assert response['obj1']['created_parsed'] == PARSED_1
+    assert response['obj1']['item']['updated'] == ISO8601_2
+    assert response['obj1']['item']['updated_parsed'] == PARSED_2
+    assert response['obj1']['item']['fields']['viewed'] == ISO8601_3
+    assert response['obj1']['item']['fields']['viewed_parsed'] == PARSED_3
+    assert response['obj1']['item']['activities']['act1']['viewed'] == ISO8601_3
+    assert response['obj1']['item']['activities']['act1']['viewed_parsed'] == PARSED_3
 
 
 # --------------------------------------
