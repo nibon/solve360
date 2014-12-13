@@ -504,10 +504,10 @@ def test_parse_nondefaultfields_dates():
 def test_parse_show_entity_dates():
     ISO8601_1 = "2014-12-12T15:19:21+01:00"
     ISO8601_2 = "2014-12-13T15:19:21+01:00"
-    ISO8601_3 = "2014-12-13T15:19:21+01:00"
+    ISO8601_3 = "2014-12-14T15:19:21+01:00"
     PARSED_1 = iso8601.parse_date(ISO8601_1)
     PARSED_2 = iso8601.parse_date(ISO8601_2)
-    PARSED_3 = iso8601.parse_date(ISO8601_2)
+    PARSED_3 = iso8601.parse_date(ISO8601_3)
 
     response_body = {'status': 'success', 'count': 1,
                      'obj1': {'id': 42,
