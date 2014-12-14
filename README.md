@@ -128,6 +128,7 @@ Invalid requests with `response.status_code == 4XX or 5XX` will raise an `reques
 ## Dependencies
 
 * [requests](https://pypi.python.org/pypi/requests)
+* [iso8601](https://pypi.python.org/pypi/iso8601)
 
 ### Testing
 
