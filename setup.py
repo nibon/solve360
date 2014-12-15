@@ -37,7 +37,7 @@ setup(
     install_requires=['requests>=1.0.0', 'iso8601>=0.1.10'],
     tests_require=['pytest>=2.0.0', 'httpretty>=0.6.1'],
     packages=['solve360'],
-    package_data={'': ['*.rst', '*.md']},
+    package_data={'': ['LICENSE', ]},
     license='The MIT Licence',
     keywords='norada solve360 api wrapper',
     classifiers=(
