@@ -1,0 +1,7 @@
+iso8601>=0.1.10
+requests>=1.0.0
+pytest>=2.0.0
+pytest-cov>=1.6
+httpretty>=0.6.1
+tox>=1.8.1
+wheel
