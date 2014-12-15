@@ -50,6 +50,18 @@ def test_list_ownership():
     assert response['status'] == 'success'
 
 
+@httpretty.activate
+def test_list_page_no_number():
+    with raises(ValueError):
+        crm.list_contacts(pages='3')
+
+
+@httpretty.activate
+def test_list_page_non_positive():
+    with raises(ValueError):
+        crm.list_contacts(pages=-1)
+
+
 # --------------------------------------
 # CONTACTS
 # --------------------------------------
@@ -228,7 +240,7 @@ def test_company_create():
 
 
 @httpretty.activate
-def test_contact_non_200():
+def test_company_non_200():
     httpretty.register_uri(httpretty.GET, crm.url.format(url='companies/10000/'), status=404)
     with raises(HTTPError):
         crm.show_company(10000)
