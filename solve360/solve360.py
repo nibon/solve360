@@ -16,7 +16,6 @@ else:
 import requests
 from iso8601 import iso8601, ParseError
 
-
 LIST_MAX_LIMIT = 5000  # Defined max limit for _list operation
 
 ENTITY_CONTACT = 'contacts'
@@ -135,15 +134,16 @@ class Solve360(object):  # pylint: disable=R0904
                     self._parse_date(entries[entry], date_fields)
         return entries
 
-    def _parse_date_wrapper(self, entry, field):
+    @staticmethod
+    def _parse_date_wrapper(entry, field):
         """Returns a dict with a new field name for the parsed date. """
         try:
             return {'{}_parsed'.format(field): iso8601.parse_date(entry[field])}
         except ParseError:
-            pass
-        return {}
+            return {}
 
-    def _parse_date(self, entry, date_fields):
+    @staticmethod
+    def _parse_date(entry, date_fields):
         """Parse the value for keys defined in `datefields` in entry.
         If successfully parsed as datetime a new key `key_parsed` is
         created with a datetime value parsed from previous string value.
@@ -155,20 +155,20 @@ class Solve360(object):  # pylint: disable=R0904
         """
         for field in date_fields:
             if field in entry:
-                entry.update(self._parse_date_wrapper(entry, field))
+                entry.update(Solve360._parse_date_wrapper(entry, field))
             if 'item' in entry:  # Show operation response
                 if field in entry['item']:
-                    entry['item'].update(self._parse_date_wrapper(entry['item'], field))
+                    entry['item'].update(Solve360._parse_date_wrapper(entry['item'], field))
                 if 'fields' in entry['item'] and field in entry['item']['fields']:
                     entry['item']['fields'].update(
-                        self._parse_date_wrapper(entry['item']['fields'],
-                                                 field))
+                        Solve360._parse_date_wrapper(entry['item']['fields'],
+                                                     field))
                 if 'activities' in entry['item']:
                     for activity in entry['item']['activities']:
                         if field in entry['item']['activities'][activity]:
                             entry['item']['activities'][activity].update(
-                                self._parse_date_wrapper(entry['item']['activities'][activity],
-                                                         field))
+                                Solve360._parse_date_wrapper(entry['item']['activities'][activity],
+                                                             field))
         return entry
 
     @valid_entity
@@ -676,4 +676,3 @@ class Solve360(object):  # pylint: disable=R0904
         kwargs['end'] = end
         kwargs['last'] = last
         return self._show_report('timetracking', **kwargs)
-
